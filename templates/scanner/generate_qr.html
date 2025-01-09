@@ -1,0 +1,49 @@
+{% extends "core/base.html" %}
+<title>{% block title %}Generate QR{% endblock title %}</title>
+
+{% block content %}
+<div class="center-container">
+    <div class="container">
+        <h1>Generate QR Code</h1>
+        <form action="{% url 'generate_qr' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="mobile_number" placeholder="Enter 10 Digit Mobile Number" required pattern="[0-9]{10}">
+            <input type="text" name="qr_data" placeholder="Enter text to generate QR" required>
+            <button type="submit">Generate</button>
+        </form>
+        <div class="qr-preview">
+            {% if qr_image_url %}
+            <h2>Your QR Code:</h2>
+            <img src="{{ qr_image_url }}" alt="Generated QR Code">
+            <br>
+            <a href="{{ qr_image_url }}" download class="download-button">Save QR</a>
+            {% endif %} <!-- Closing the 'if qr_image_url' block -->
+        </div>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeButton = document.createElement('span');
+        closeButton.innerHTML = '&times;';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '10px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.fontSize = '24px';
+        closeButton.style.color = '#000';
+
+        const qrPreview = document.querySelector('.qr-preview');
+        if (qrPreview) {
+            qrPreview.style.position = 'relative';
+            qrPreview.appendChild(closeButton);
+
+            closeButton.addEventListener('click', function() {
+                qrPreview.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock content %}
